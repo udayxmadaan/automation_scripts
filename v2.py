@@ -85,22 +85,25 @@ try:
     if device is None:
         raise RuntimeError("CreateKCubeDCServo returned None (wrong device type or bad serial).")
 
-    print("Connecting...")
     device.Connect(serial)
+    print("Connected")
 
+    # blocks execution until controller finishes loading its internal config from firmware
+    # so commands don't run before the device is ready
     device.WaitForSettingsInitialized(5000)
 
     # IMPORTANT: load motor config so MoveTo has unit converter/settings
     try_load_motor_configuration(device, serial)
 
+    # starts a background thread that continuously queries the device for status updates 
+    # on things like position
     device.StartPolling(250)
-    device.EnableDevice()
-    time.sleep(0.75)
-
-    print("Homing...")
+    device.EnableDevice() # enables motor drive electronics
+    time.sleep(0.75) # prevent race conditions
+    
+    print("Moving to a reference point to define 0 accurately...")
     device.Home(60000)
 
-    # MoveTo requires System.Decimal for your DLL
     print("Move to 2.0 mm")
     device.MoveTo(dec(2.0), 60000)
 
@@ -112,7 +115,7 @@ try:
 finally:
     if device is not None:
         try:
-            device.StopPolling()
+            device.StopPolling() # stop the start polling thread
         except Exception:
             pass
         try:
