@@ -12,6 +12,8 @@ clr.AddReference("Thorlabs.MotionControl.KCube.DCServoCLI")
 from Thorlabs.MotionControl.DeviceManagerCLI import DeviceManagerCLI
 from Thorlabs.MotionControl.KCube.DCServoCLI import KCubeDCServo
 
+print("Script Run")
+
 serialNo = "27501283"
 
 DeviceManagerCLI.BuildDeviceList()
@@ -47,11 +49,29 @@ def move_by_mm(delta_mm_int: int):
     device.MoveTo(cur + Decimal(delta_mm_int), timeout)
     time.sleep(0.2)  # small settle/polling update time
 
-device.Home(60000)
-time.sleep(0.2)  # small settle/polling update time
-move_by_mm(5)
-move_by_mm(2)
-move_by_mm(-1)
+def move_absolute(position_mm: float):
+    # Ensure device is enabled
+    try:
+        if not device.IsEnabled:
+            device.EnableDevice()
+            time.sleep(0.5)
+    except:
+        device.EnableDevice()
+        time.sleep(0.5)
+
+    target = Decimal(position_mm)
+    device.MoveTo(target, timeout)
+
+def homing():
+    device.Home(60000)
+    time.sleep(0.2)  # small settle/polling update time
+
+
+
+homing()
+move_absolute(5)
+move_absolute(12)
+move_absolute(3)
 
 device.StopPolling()
 device.ShutDown()
