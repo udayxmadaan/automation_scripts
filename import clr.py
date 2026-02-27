@@ -1,6 +1,7 @@
 import clr
 import sys
 import time
+from System import Decimal
 
 # Path to Kinesis DLLs
 sys.path.append(r"C:\Program Files\Thorlabs\Kinesis")
@@ -14,7 +15,7 @@ from Thorlabs.MotionControl.DeviceManagerCLI import DeviceManagerCLI
 from Thorlabs.MotionControl.KCube.DCServoCLI import KCubeDCServo
 
 # --------- YOUR DEVICE SERIAL NUMBER ----------
-serial = "27000423"   # change to your real one
+serial = "27501283"   # change to your real one
 # ---------------------------------------------
 
 # Find devices
@@ -36,16 +37,16 @@ device.Home(60000)
 
 # ---- BASIC FORWARD / BACKWARD MOVES ----
 
-print("Move forward to 5 mm")
-device.MoveTo(5, 60000)
+print("Move forward to 2 mm")
+device.MoveTo(Decimal(2), 60000)
 time.sleep(1)
 
 print("Move backward to 1 mm")
-device.MoveTo(1, 60000)
+device.MoveTo(Decimal(1), 60000)
 time.sleep(1)
 
 print("Move back to zero")
-device.MoveTo(0, 60000)
+device.MoveTo(Decimal(0), 60000)
 
 # Shutdown cleanly
 device.StopPolling()
